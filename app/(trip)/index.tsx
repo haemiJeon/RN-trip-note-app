@@ -1,37 +1,55 @@
-import { useState } from 'react'
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+import { Suspense } from 'react'
+import { ActivityIndicator, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const MyTripList = () => {
-  const [inputValue, setInputValue] = useState('')
+let userInfo: { name: string; email: string } | null = null
+let userPromise: Promise<void> | null = null
 
+function fetchUser() {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      userInfo = {
+        name: '홍길동',
+        email: 'test@email.com',
+      }
+      resolve()
+    }, 2000)
+  })
+}
+
+function useUser() {
+  if (userInfo) {
+    return userInfo
+  }
+  if (!userPromise) {
+    userPromise = fetchUser()
+  }
+  throw userPromise
+}
+
+function UserProfile() {
+  const user = useUser()
   return (
-    <SafeAreaView>
-      <ScrollView horizontal>
-        <View style={{ width: 300, height: 300, backgroundColor: 'blue' }} />
-        <View style={{ width: 300, height: 300, backgroundColor: 'red' }} />
-        <View style={{ width: 300, height: 300, backgroundColor: 'black' }} />
-        <View style={{ width: 300, height: 300, backgroundColor: 'yellow' }} />
-      </ScrollView>
+    <View>
+      <Text>{user.name}</Text>
+      <Text>{user.email}</Text>
+    </View>
+  )
+}
 
-      <Pressable
-        onPress={() => console.log('press')}
-        onPressIn={() => console.log('in')}
-        onPressOut={() => console.log('out')}
-      >
-        <Text>버튼</Text>
-      </Pressable>
-
-      <View>
-        <TextInput
-          keyboardType='email-address'
-          style={{ width: 200, height: 40, borderWidth: 1 }}
-          value={inputValue}
-          onChangeText={(text) => setInputValue(text)}
-        />
-        <Text>{inputValue}</Text>
-      </View>
-    </SafeAreaView>
+const MyTripList = () => {
+  return (
+    <Suspense
+      fallback={
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <ActivityIndicator size='large' />
+        </View>
+      }
+    >
+      <SafeAreaView>
+        <UserProfile />
+      </SafeAreaView>
+    </Suspense>
   )
 }
 
