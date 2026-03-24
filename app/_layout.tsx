@@ -1,27 +1,46 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native'
-import { Stack } from 'expo-router'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useFonts } from 'expo-font'
+import { SplashScreen, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import { useEffect } from 'react'
 import 'react-native-reanimated'
 
-import { useColorScheme } from '@/hooks/use-color-scheme'
+SplashScreen.preventAutoHideAsync()
 
 export const unstable_settings = {
   anchor: '(trip)',
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme()
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 3,
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 5,
+      },
+    },
+  })
+
+  const [fontsLoaded] = useFonts({
+    'Pretendard-Regular': require('../assets/fonts/Pretendard-Regular.otf'),
+    'Pretendard-Medium': require('../assets/fonts/Pretendard-Medium.otf'),
+    'Pretendard-SemiBold': require('../assets/fonts/Pretendard-SemiBold.otf'),
+    'Pretendard-Bold': require('../assets/fonts/Pretendard-Bold.otf'),
+  })
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync()
+    }
+  }, [fontsLoaded])
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <QueryClientProvider client={queryClient}>
       <Stack>
         <Stack.Screen name='(trip)' options={{ headerShown: false }} />
       </Stack>
       <StatusBar style='auto' />
-    </ThemeProvider>
+    </QueryClientProvider>
   )
 }
