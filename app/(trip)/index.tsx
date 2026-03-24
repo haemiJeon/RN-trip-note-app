@@ -1,55 +1,62 @@
-import { Suspense } from 'react'
-import { ActivityIndicator, Text, View } from 'react-native'
+import { useDeferredValue, useMemo, useState } from 'react'
+import { FlatList, Text, TextInput } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-let userInfo: { name: string; email: string } | null = null
-let userPromise: Promise<void> | null = null
+function slowFilter(text: string) {
+  const result: string[] = []
 
-function fetchUser() {
-  return new Promise<void>((resolve) => {
-    setTimeout(() => {
-      userInfo = {
-        name: '홍길동',
-        email: 'test@email.com',
-      }
-      resolve()
-    }, 2000)
-  })
-}
-
-function useUser() {
-  if (userInfo) {
-    return userInfo
+  for (let i = 0; i < 1500; i++) {
+    result.push(`${text} - item ${i}`)
   }
-  if (!userPromise) {
-    userPromise = fetchUser()
-  }
-  throw userPromise
-}
 
-function UserProfile() {
-  const user = useUser()
-  return (
-    <View>
-      <Text>{user.name}</Text>
-      <Text>{user.email}</Text>
-    </View>
-  )
+  return result
 }
 
 const MyTripList = () => {
+  const [textValue, setTextValue] = useState('')
+
+  // @useTransition 방식 (리렌더링을 지연시킴)
+  // const [items, setItems] = useState<string[]>([])
+  // const [isPending, startTransition] = useTransition()
+
+  // const handleChange = (value: string) => {
+  //   setTextValue(value)
+  //   startTransition(() => {
+  //     setItems(slowFilter(value))
+  //   })
+  // }
+
+  // @useDeferredValue 방식 (값의 업데이트를 지연시킴)
+  const deferredTextValue = useDeferredValue(textValue)
+
+  const items = useMemo(() => {
+    if (!deferredTextValue) return []
+    return slowFilter(deferredTextValue)
+  }, [deferredTextValue])
+
+  const isPending = textValue !== deferredTextValue
+
   return (
-    <Suspense
-      fallback={
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <ActivityIndicator size='large' />
-        </View>
-      }
-    >
-      <SafeAreaView>
-        <UserProfile />
-      </SafeAreaView>
-    </Suspense>
+    <SafeAreaView>
+      <TextInput
+        value={textValue}
+        // onChangeText={handleChange}
+        onChangeText={setTextValue}
+        style={{ height: 50, borderWidth: 1 }}
+      />
+
+      {isPending && (
+        <Text style={{ color: 'gray' }}>리스트 업데이트 중...</Text>
+      )}
+
+      <FlatList
+        data={items}
+        keyExtractor={(item) => item}
+        renderItem={({ item }) => (
+          <Text style={{ opacity: isPending ? 0.5 : 1 }}>{item}</Text>
+        )}
+      />
+    </SafeAreaView>
   )
 }
 
