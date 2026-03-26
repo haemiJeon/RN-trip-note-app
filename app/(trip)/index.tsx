@@ -1,13 +1,51 @@
-import { Link } from 'expo-router'
+import PlusButton from '@/components/PlusButton'
+import TripCard from '@/components/TripCard'
+import { theme } from '@/constants/theme'
+import { useGetTripList } from '@/hooks/useTrip'
+import { useRouter } from 'expo-router'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const MyTripList = () => {
+  const router = useRouter()
+  const { data } = useGetTripList()
+  console.log(data)
+
   return (
-    <SafeAreaView>
-      <Link href='/(trip)/createTrip'>여행 생성 화면 이동</Link>
-      <Link href='/(trip)/updateTrip'>여행 수정 화면 이동</Link>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>내 여행</Text>
+      <ScrollView contentContainerStyle={{ gap: 10 }}>
+        {data?.data.map((item) => (
+          <TripCard
+            key={item.id}
+            id={item.id}
+            title={item.title}
+            startDate={item.startDate}
+            endDate={item.endDate}
+          />
+        ))}
+      </ScrollView>
+      <View style={styles.buttonContainer}>
+        <PlusButton onPress={() => router.navigate('/createTrip')} />
+      </View>
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 40,
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontFamily: theme.fonts.bold,
+    marginBottom: 30,
+  },
+  buttonContainer: {
+    alignItems: 'flex-end',
+  },
+})
 
 export default MyTripList
