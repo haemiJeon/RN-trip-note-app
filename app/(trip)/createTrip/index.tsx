@@ -43,7 +43,7 @@ const CreateTripScreen = () => {
     (text: string) => {
       setTitle(text)
     },
-    [title],
+    [],
   )
 
   // android ui 렌더링을 위한 코드
