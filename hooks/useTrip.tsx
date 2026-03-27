@@ -1,9 +1,8 @@
 import { api } from '@/api'
 import { RequestCreateType, ResponseTripListType } from '@/types/tripType'
 import {
-  UseQueryResult,
+  useInfiniteQuery,
   useMutation,
-  useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
 
@@ -21,12 +20,21 @@ export const useCreateTrip = () => {
   })
 }
 
-export const useGetTripList = (): UseQueryResult<ResponseTripListType> => {
-  return useQuery({
+export const useGetTripList = () => {
+  return useInfiniteQuery({
     queryKey: ['trip-list'],
-    queryFn: async () => {
-      const res = await api.get('/trips')
+    queryFn: async ({ pageParam }): Promise<ResponseTripListType> => {
+      const res = await api.get('/trips', {
+        params: { page: pageParam },
+      })
       return res.data
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.meta.hasNextPage) {
+        return lastPage.meta.currentPage + 1
+      }
+      return undefined
     },
   })
 }
