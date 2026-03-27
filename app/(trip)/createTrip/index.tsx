@@ -1,10 +1,10 @@
 import Button from '@/components/Button'
 import Input from '@/components/Input'
 import { theme } from '@/constants/theme'
-import { useCreateTrip } from '@/hooks/useTrip'
-import DateTimePicker from '@react-native-community/datetimepicker'
-import { useRouter } from 'expo-router'
-import { useCallback, useState } from 'react'
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker'
+import { useState } from 'react'
 import {
   KeyboardAvoidingView,
   Platform,
@@ -16,52 +16,54 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const CreateTripScreen = () => {
-  const router = useRouter()
-  const [title, setTitle] = useState<string>('')
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date())
-  const [endDate, setEndDate] = useState<Date | undefined>(new Date())
+interface TripFormProps {
+  id?: string
+  title: string
+  setTitle: React.Dispatch<React.SetStateAction<string>>
+  handleChangeText: (text: string) => void
+  startDate?: Date
+  endDate?: Date
+  setStartDate: React.Dispatch<React.SetStateAction<Date | undefined>>
+  setEndDate: React.Dispatch<React.SetStateAction<Date | undefined>>
+  onPress: () => void
+}
 
-  const { mutateAsync } = useCreateTrip()
+const formatDate = (date: Date) => {
+  return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}.`
+}
 
-  const createTrip = () => {
-    mutateAsync(
-      {
-        title,
-        startDate: startDate,
-        endDate: endDate,
-      },
-      {
-        onSuccess: () => {
-          router.back()
-        },
-      },
-    )
+const CreateTripScreen = ({
+  id,
+  title,
+  handleChangeText,
+  startDate,
+  endDate,
+  setStartDate,
+  setEndDate,
+  onPress,
+}: TripFormProps) => {
+  const [showStartPicker, setShowStartPicker] = useState(false)
+  const [showEndPicker, setShowEndPicker] = useState(false)
+
+  const handleStartDateChange = (event: DateTimePickerEvent, date?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowStartPicker(false)
+    }
+    if (event.type === 'set' && date) {
+      setStartDate(date)
+      if (endDate && date > endDate) {
+        setEndDate(date)
+      }
+    }
   }
 
-  const handleChangeText = useCallback(
-    (text: string) => {
-      setTitle(text)
-    },
-    [],
-  )
-
-  // android ui 렌더링을 위한 코드
-  const [showStartDate, setShowStartDate] = useState(false)
-  const [showEndDate, setShowEndDate] = useState(false)
-
-  const onChangeStartDate = (event: any, selectedDate?: Date) => {
-    setShowStartDate(false)
-    if (selectedDate) setStartDate(selectedDate)
-  }
-
-  const onChangeEndDate = (event: any, selectedDate?: Date) => {
-    setShowEndDate(false)
-    if (selectedDate) setEndDate(selectedDate)
-  }
-
-  const formatDate = (date: Date) => {
-    return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}.`
+  const handleEndDateChange = (event: DateTimePickerEvent, date?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowEndPicker(false)
+    }
+    if (event.type === 'set' && date) {
+      setEndDate(date)
+    }
   }
 
   return (
@@ -78,74 +80,68 @@ const CreateTripScreen = () => {
             <View>
               <View style={styles.dateContainer}>
                 <Text>시작일</Text>
-                {Platform.OS === 'ios' ? (
+                {Platform.OS === 'android' ? (
+                  <Pressable
+                    onPress={() => setShowStartPicker(true)}
+                    style={styles.dateButton}
+                  >
+                    <Text style={styles.dateText}>
+                      {formatDate(startDate ?? new Date())}
+                    </Text>
+                  </Pressable>
+                ) : (
                   <DateTimePicker
                     value={startDate ?? new Date()}
                     mode='date'
                     display='default'
                     locale='ko-KR'
-                    onValueChange={onChangeStartDate}
+                    onChange={handleStartDateChange}
                   />
-                ) : (
-                  <>
-                    <Pressable
-                      style={styles.dateButton}
-                      onPress={() => setShowStartDate(true)}
-                    >
-                      <Text style={styles.dateText}>
-                        {formatDate(startDate ?? new Date())}
-                      </Text>
-                    </Pressable>
-                    {showStartDate && (
-                      <DateTimePicker
-                        value={startDate ?? new Date()}
-                        mode='date'
-                        display='default'
-                        locale='ko-KR'
-                        onValueChange={onChangeStartDate}
-                      />
-                    )}
-                  </>
+                )}
+                {Platform.OS === 'android' && showStartPicker && (
+                  <DateTimePicker
+                    value={startDate ?? new Date()}
+                    mode='date'
+                    display='default'
+                    onChange={handleStartDateChange}
+                  />
                 )}
               </View>
               <View style={[styles.dateContainer, { marginTop: 12 }]}>
                 <Text>종료일</Text>
-                {Platform.OS === 'ios' ? (
+                {Platform.OS === 'android' ? (
+                  <Pressable
+                    onPress={() => setShowEndPicker(true)}
+                    style={styles.dateButton}
+                  >
+                    <Text style={styles.dateText}>
+                      {formatDate(endDate ?? new Date())}
+                    </Text>
+                  </Pressable>
+                ) : (
                   <DateTimePicker
                     value={endDate ?? new Date()}
                     mode='date'
                     display='default'
                     locale='ko-KR'
-                    onValueChange={onChangeEndDate}
+                    onChange={handleEndDateChange}
                     minimumDate={startDate}
                   />
-                ) : (
-                  <>
-                    <Pressable
-                      style={styles.dateButton}
-                      onPress={() => setShowEndDate(true)}
-                    >
-                      <Text style={styles.dateText}>
-                        {formatDate(endDate ?? new Date())}
-                      </Text>
-                    </Pressable>
-                    {showEndDate && (
-                      <DateTimePicker
-                        value={endDate ?? new Date()}
-                        mode='date'
-                        display='default'
-                        locale='ko-KR'
-                        onValueChange={onChangeEndDate}
-                        minimumDate={startDate}
-                      />
-                    )}
-                  </>
+                )}
+                {Platform.OS === 'android' && showEndPicker && (
+                  <DateTimePicker
+                    value={endDate ?? new Date()}
+                    mode='date'
+                    display='default'
+                    onChange={handleEndDateChange}
+                    minimumDate={startDate}
+                  />
                 )}
               </View>
             </View>
           </View>
           <View style={styles.buttonContainer}>
-            <Button label='여행 생성하기' onPress={createTrip} />
+            <Button label={id ? '여행 수정' : '여행 생성'} onPress={onPress} />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -180,14 +176,14 @@ const styles = StyleSheet.create({
   },
   dateButton: {
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 14,
     borderRadius: 8,
+    backgroundColor: '#f0f0f0',
   },
   dateText: {
     fontSize: 16,
     fontFamily: theme.fonts.regular,
-    color: theme.colors.black,
+    color: '#333',
   },
   buttonContainer: {
     marginTop: 'auto',
