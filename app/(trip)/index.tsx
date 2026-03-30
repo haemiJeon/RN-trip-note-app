@@ -2,13 +2,16 @@ import PlusButton from '@/components/PlusButton'
 import TripCard from '@/components/TripCard'
 import { theme } from '@/constants/theme'
 import { useGetTripList } from '@/hooks/useTrip'
+import { useTripStore } from '@/store/tripStore'
 import { useRouter } from 'expo-router'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const MyTripList = () => {
   const router = useRouter()
+  const cachedTrips = useTripStore((state) => state.cachedTrips)
+  const { setCachedTrips } = useTripStore((state) => state.actions)
   const {
     data: trips,
     fetchNextPage,
@@ -16,11 +19,23 @@ const MyTripList = () => {
     isFetchingNextPage,
   } = useGetTripList()
 
+  useEffect(() => {
+    if (trips?.pages[0]) {
+      setCachedTrips(trips.pages[0])
+    }
+  }, [trips, setCachedTrips])
+
   const combinedTrips = useMemo(() => {
-    const data = trips?.pages.flatMap((page) => page.data) ?? []
-    const meta = trips?.pages[0].meta
-    return { data, meta }
-  }, [trips])
+    if (trips?.pages.length) {
+      const data = trips?.pages.flatMap((page) => page.data) ?? []
+      const meta = trips?.pages[0].meta
+      return { data, meta }
+    }
+    if (cachedTrips) {
+      return { data: cachedTrips.data, meta: cachedTrips.meta }
+    }
+    return { data: [], meta: undefined }
+  }, [trips, cachedTrips])
 
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
