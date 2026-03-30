@@ -1,11 +1,24 @@
 import { theme } from '@/constants/theme'
-import { TripListItemType } from '@/types/tripType'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
 import { memo } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 
-const TripCard = ({ id, title, startDate, endDate }: TripListItemType) => {
+interface TripCardProps {
+  id: string
+  title: string
+  startDate: string
+  endDate: string
+  handleOpenModal: (id: string) => void
+}
+
+const TripCard = ({
+  id,
+  title,
+  startDate,
+  endDate,
+  handleOpenModal,
+}: TripCardProps) => {
   const router = useRouter()
 
   return (
@@ -19,7 +32,7 @@ const TripCard = ({ id, title, startDate, endDate }: TripListItemType) => {
           {startDate} ~ {endDate}
         </Text>
       </View>
-      <Pressable>
+      <Pressable onPress={() => handleOpenModal(id)}>
         <AntDesign name='more' size={24} color='black' />
       </Pressable>
     </Pressable>

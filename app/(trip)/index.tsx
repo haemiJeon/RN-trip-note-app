@@ -1,10 +1,11 @@
+import Modal from '@/components/Modal'
 import PlusButton from '@/components/PlusButton'
 import TripCard from '@/components/TripCard'
 import { theme } from '@/constants/theme'
 import { useGetTripList } from '@/hooks/useTrip'
 import { useTripStore } from '@/store/tripStore'
 import { useRouter } from 'expo-router'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -12,6 +13,32 @@ const MyTripList = () => {
   const router = useRouter()
   const cachedTrips = useTripStore((state) => state.cachedTrips)
   const { setCachedTrips } = useTripStore((state) => state.actions)
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  const handleOpenModal = (id: string) => {
+    setIsOpen(true)
+    setSelectedId(id)
+  }
+
+  const handleCloseModal = () => {
+    setIsOpen(false)
+    setSelectedId(null)
+  }
+
+  const updateTrip = (tripId: string) => {
+    router.navigate({
+      pathname: '/updateTrip',
+      params: {
+        tripId,
+      },
+    })
+  }
+
+  const removeTrip = (tripId: string) => {
+    console.log(tripId)
+  }
+
   const {
     data: trips,
     fetchNextPage,
@@ -47,8 +74,10 @@ const MyTripList = () => {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>내 여행</Text>
       <FlatList
+        style={{ flex: 1 }}
         data={combinedTrips.data}
-        contentContainerStyle={{ gap: 20 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TripCard
@@ -57,6 +86,7 @@ const MyTripList = () => {
             title={item.title}
             startDate={item.startDate}
             endDate={item.endDate}
+            handleOpenModal={handleOpenModal}
           />
         )}
         ListEmptyComponent={() => (
@@ -68,6 +98,13 @@ const MyTripList = () => {
       <View style={styles.buttonContainer}>
         <PlusButton onPress={() => router.navigate('/createTrip')} />
       </View>
+      <Modal
+        selectedId={selectedId}
+        isOpen={isOpen}
+        closeModal={handleCloseModal}
+        updateTrip={updateTrip}
+        removeTrip={removeTrip}
+      />
     </SafeAreaView>
   )
 }
@@ -84,7 +121,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   buttonContainer: {
-    alignItems: 'flex-end',
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
   },
 })
 
