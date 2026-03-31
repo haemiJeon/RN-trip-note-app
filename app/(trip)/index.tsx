@@ -2,7 +2,7 @@ import Modal from '@/components/Modal'
 import PlusButton from '@/components/PlusButton'
 import TripCard from '@/components/TripCard'
 import { theme } from '@/constants/theme'
-import { useGetTripList } from '@/hooks/useTrip'
+import { useDeleteTrip, useGetTripList } from '@/hooks/useTrip'
 import { useTripStore } from '@/store/tripStore'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
@@ -11,10 +11,19 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const MyTripList = () => {
   const router = useRouter()
-  const cachedTrips = useTripStore((state) => state.cachedTrips)
-  const { setCachedTrips } = useTripStore((state) => state.actions)
+  const {
+    cachedTrips,
+    actions: { setCachedTrips },
+  } = useTripStore((state) => state)
   const [isOpen, setIsOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  const {
+    data: trips,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useGetTripList()
 
   const handleOpenModal = (id: string) => {
     setIsOpen(true)
@@ -33,18 +42,17 @@ const MyTripList = () => {
         tripId,
       },
     })
+    handleCloseModal()
   }
 
+  const { mutateAsync } = useDeleteTrip()
   const removeTrip = (tripId: string) => {
-    console.log(tripId)
+    mutateAsync(tripId, {
+      onSuccess: () => {
+        handleCloseModal()
+      },
+    })
   }
-
-  const {
-    data: trips,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useGetTripList()
 
   useEffect(() => {
     if (trips?.pages[0]) {

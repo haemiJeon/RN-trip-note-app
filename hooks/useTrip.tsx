@@ -1,13 +1,19 @@
 import { api } from '@/api'
-import { RequestCreateType, ResponseTripListType } from '@/types/tripType'
 import {
+  RequestCreateType,
+  ResponseTripListType,
+  TripListItemType,
+} from '@/types/tripType'
+import {
+  UseQueryResult,
   useInfiniteQuery,
   useMutation,
+  useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
 
 export const useCreateTrip = () => {
-  const queries = useQueryClient()
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (body: RequestCreateType) => {
@@ -15,7 +21,7 @@ export const useCreateTrip = () => {
       return res.data
     },
     onSuccess: () => {
-      queries.invalidateQueries({ queryKey: ['trip-list'] })
+      queryClient.invalidateQueries({ queryKey: ['trip-list'] })
     },
   })
 }
@@ -35,6 +41,50 @@ export const useGetTripList = () => {
         return lastPage.meta.currentPage + 1
       }
       return undefined
+    },
+  })
+}
+
+export const useGetTrip = (
+  tripId: string,
+): UseQueryResult<TripListItemType> => {
+  return useQuery({
+    queryKey: ['trip', tripId],
+    queryFn: async () => {
+      const res = await api.get(`/trips/${tripId}`)
+      return res.data
+    },
+  })
+}
+
+export const useUpdateTrip = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (body: RequestCreateType & { tripId: string }) => {
+      const res = await api.patch(`/trips/${body.tripId}`, {
+        title: body.title,
+        startDate: body.startDate,
+        endDate: body.endDate,
+      })
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trip-list'] })
+    },
+  })
+}
+
+export const useDeleteTrip = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (tripId: string) => {
+      const res = await api.delete(`/trips/${tripId}`)
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trip-list'] })
     },
   })
 }
