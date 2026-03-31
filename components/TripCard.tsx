@@ -1,4 +1,5 @@
 import { theme } from '@/constants/theme'
+import { useTripTitleStore } from '@/store/useTripTitleStore'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
 import { memo } from 'react'
@@ -20,11 +21,17 @@ const TripCard = ({
   handleOpenModal,
 }: TripCardProps) => {
   const router = useRouter()
+  const {
+    action: { setTitle },
+  } = useTripTitleStore((state) => state)
 
   return (
     <Pressable
       style={styles.container}
-      onPress={() => router.navigate(`/(trips)/${id}`)}
+      onPress={() => {
+        setTitle(title)
+        router.navigate(`/(trips)/${id}`)
+      }}
     >
       <View style={{ gap: 5 }}>
         <Text style={styles.title}>{title}</Text>
