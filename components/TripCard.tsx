@@ -30,7 +30,7 @@ const TripCard = ({
       style={styles.container}
       onPress={() => {
         setTitle(title)
-        router.navigate(`/(trips)/${id}`)
+        router.navigate(`/${id}`)
       }}
     >
       <View style={{ gap: 5 }}>
