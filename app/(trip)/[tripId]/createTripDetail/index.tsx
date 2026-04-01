@@ -52,18 +52,23 @@ const CreateTripDetailScreen = () => {
 
   useEffect(() => {
     const getCurrentLocation = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync()
-      if (status !== 'granted') {
-        Alert.alert('권한 요청을 거부 했습니다.')
-        return
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync()
+        if (status !== 'granted') {
+          Alert.alert('권한 요청을 거부 했습니다.')
+          return
+        }
+        let location = await Location.getCurrentPositionAsync()
+        setLocation(location)
+      } catch (error) {
+        console.log('Location error:', error)
+        Alert.alert('위치 오류', '현재 위치를 가져올 수 없습니다. 설정에서 위치 서비스를 확인해주세요.')
       }
-      let location = await Location.getCurrentPositionAsync()
-      setLocation(location)
     }
     getCurrentLocation()
   }, [])
 
-  const convertWeather = (weather: string) => {
+  const convertWeather = (weather?: string) => {
     switch (weather) {
       case 'Clouds':
         return '흐림'
@@ -75,6 +80,8 @@ const CreateTripDetailScreen = () => {
         return '눈'
       case 'Mist':
         return '안개'
+      default:
+        return ''
     }
   }
 
@@ -97,7 +104,7 @@ const CreateTripDetailScreen = () => {
           <Input label='제목' />
           <Input
             label='날씨'
-            value={convertWeather(weatherData?.weather[0].main)}
+            value={convertWeather(weatherData?.weather?.[0]?.main)}
             editable={false}
           />
           <Input label='내용' />
