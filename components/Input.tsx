@@ -4,18 +4,20 @@ import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native'
 
 interface InputProps extends TextInputProps {
   label: string
+  editable?: boolean
 }
 
-const Input = ({ label, ...props }: InputProps) => {
+const Input = ({ label, editable = true, ...props }: InputProps) => {
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.inputLabel}>{label}</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, editable === false && styles.editAble]}
         {...props}
         autoCapitalize='none'
         autoComplete='off'
         autoCorrect={false}
+        editable={editable}
       />
     </View>
   )
@@ -34,6 +36,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     borderRadius: 20,
     paddingHorizontal: 20,
+  },
+  editAble: {
+    backgroundColor: theme.colors.gray100,
   },
 })
 

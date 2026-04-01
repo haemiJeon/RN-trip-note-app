@@ -3,7 +3,8 @@ import { theme } from '@/constants/theme'
 import Entypo from '@expo/vector-icons/Entypo'
 import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
-import { useState } from 'react'
+import * as Location from 'expo-location'
+import { useEffect, useState } from 'react'
 import {
   Alert,
   KeyboardAvoidingView,
@@ -17,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const CreateTripDetailScreen = () => {
   const [image, setImage] = useState<string | null>(null)
+  const [location, setLocation] = useState<Location.LocationObject | null>(null)
 
   const pickImage = async () => {
     const permissionResult =
@@ -40,6 +42,19 @@ const CreateTripDetailScreen = () => {
     }
   }
 
+  useEffect(() => {
+    const getCurrentLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync()
+      if (status !== 'granted') {
+        Alert.alert('권한 요청을 거부 했습니다.')
+        return
+      }
+      let location = await Location.getCurrentPositionAsync()
+      setLocation(location)
+    }
+    getCurrentLocation()
+  }, [])
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -57,6 +72,7 @@ const CreateTripDetailScreen = () => {
             </Pressable>
           )}
           <Input label='제목' />
+          <Input label='날씨' editable={false} />
         </ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>
