@@ -1,5 +1,7 @@
+import Button from '@/components/Button'
 import Input from '@/components/Input'
 import { theme } from '@/constants/theme'
+import { useGetWeather } from '@/hooks/useTripDetail'
 import Entypo from '@expo/vector-icons/Entypo'
 import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
@@ -13,12 +15,18 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const CreateTripDetailScreen = () => {
   const [image, setImage] = useState<string | null>(null)
   const [location, setLocation] = useState<Location.LocationObject | null>(null)
+
+  const { data: weatherData } = useGetWeather(
+    location?.coords.latitude ?? 0,
+    location?.coords.longitude ?? 0,
+  )
 
   const pickImage = async () => {
     const permissionResult =
@@ -55,6 +63,21 @@ const CreateTripDetailScreen = () => {
     getCurrentLocation()
   }, [])
 
+  const convertWeather = (weather: string) => {
+    switch (weather) {
+      case 'Clouds':
+        return '흐림'
+      case 'Clear':
+        return '맑음'
+      case 'Rain':
+        return '비'
+      case 'Snow':
+        return '눈'
+      case 'Mist':
+        return '안개'
+    }
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -72,7 +95,15 @@ const CreateTripDetailScreen = () => {
             </Pressable>
           )}
           <Input label='제목' />
-          <Input label='날씨' editable={false} />
+          <Input
+            label='날씨'
+            value={convertWeather(weatherData?.weather[0].main)}
+            editable={false}
+          />
+          <Input label='내용' />
+          <View style={{ marginTop: 'auto' }}>
+            <Button label='여행기록 추가' onPress={() => {}} />
+          </View>
         </ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>

@@ -1,6 +1,11 @@
 import { api } from '@/api'
 import { ResponseTripDetailList } from '@/types/tripDetailType'
-import { UseInfiniteQueryResult, useInfiniteQuery } from '@tanstack/react-query'
+import {
+  UseInfiniteQueryResult,
+  useInfiniteQuery,
+  useQuery,
+} from '@tanstack/react-query'
+import axios from 'axios'
 
 export const useGetDetailList = (
   tripId: string,
@@ -27,5 +32,17 @@ export const useGetDetailList = (
       return undefined
     },
     enabled: !!tripId,
+  })
+}
+
+export const useGetWeather = (lat: number, lon: number) => {
+  return useQuery({
+    queryKey: ['weather', lat, lon],
+    queryFn: async () => {
+      const res = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.EXPO_PUBLIC_APP_WEATHER_API_KEY}`,
+      )
+      return res.data
+    },
   })
 }
