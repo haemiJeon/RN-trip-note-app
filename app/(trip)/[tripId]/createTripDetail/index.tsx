@@ -51,16 +51,20 @@ const CreateTripDetailScreen = () => {
   }
 
   useEffect(() => {
-    const getCurrentLocation = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync()
-      if (status !== 'granted') {
-        Alert.alert('권한 요청을 거부 했습니다.')
-        return
+    try {
+      const getCurrentLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync()
+        if (status !== 'granted') {
+          Alert.alert('권한 요청을 거부 했습니다.')
+          return
+        }
+        let location = await Location.getCurrentPositionAsync()
+        setLocation(location)
       }
-      let location = await Location.getCurrentPositionAsync()
-      setLocation(location)
+      getCurrentLocation()
+    } catch (error) {
+      console.log(error)
     }
-    getCurrentLocation()
   }, [])
 
   const convertWeather = (weather: string) => {
