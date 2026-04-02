@@ -114,14 +114,16 @@ const CreateTripDetailScreen = () => {
     >
       <SafeAreaView edges={['bottom']} style={styles.container}>
         <ScrollView contentContainerStyle={styles.formContainer}>
-          {image ? (
-            <Image source={{ uri: image.uri }} style={styles.image} />
-          ) : (
-            <Pressable style={styles.imageContainer} onPress={pickImage}>
-              <Entypo name='camera' size={24} color='black' />
-              <Text style={styles.imageText}>이미지 추가</Text>
-            </Pressable>
-          )}
+          <Pressable onPress={pickImage}>
+            {image ? (
+              <Image source={{ uri: image.uri }} style={styles.image} />
+            ) : (
+              <View style={styles.imageContainer}>
+                <Entypo name='camera' size={24} color='black' />
+                <Text style={styles.imageText}>이미지 추가</Text>
+              </View>
+            )}
+          </Pressable>
           <Input
             label='제목'
             value={title ?? ''}
@@ -135,7 +137,11 @@ const CreateTripDetailScreen = () => {
           <Input
             label='내용'
             value={content ?? ''}
-            style={{ height: 150, paddingVertical: 10 }}
+            style={{
+              height: 150,
+              paddingVertical: 10,
+              textAlignVertical: 'top',
+            }}
             onChangeText={(text) => setContent(text)}
             multiline
           />
