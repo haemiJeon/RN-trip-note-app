@@ -3,7 +3,7 @@ import { TripDetailItemType } from '@/types/tripDetailType'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { Image } from 'expo-image'
 import { memo } from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native'
 
 interface TripDetailCardProps {
   item: TripDetailItemType
@@ -11,11 +11,16 @@ interface TripDetailCardProps {
 }
 
 const TripDetailCard = ({ item, handleModal }: TripDetailCardProps) => {
+  const imageUrl =
+    Platform.OS === 'android' && item.image
+      ? item.image.replace('localhost', '10.0.2.2')
+      : item.image
+
   return (
-    <Pressable>
+    <Pressable onPress={() => {}}>
       <Image
         contentFit='cover'
-        source={{ uri: item.image }}
+        source={{ uri: imageUrl }}
         style={styles.image}
       />
       <View style={styles.container}>
