@@ -1,5 +1,5 @@
 import { theme } from '@/constants/theme'
-import { useTripTitleStore } from '@/store/useTripTitleStore'
+import { useTripInfoStore } from '@/store/useTripInfoStore'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
 import { memo } from 'react'
@@ -22,14 +22,14 @@ const TripCard = ({
 }: TripCardProps) => {
   const router = useRouter()
   const {
-    action: { setTitle },
-  } = useTripTitleStore((state) => state)
+    action: { setTripInfo },
+  } = useTripInfoStore((state) => state)
 
   return (
     <Pressable
       style={styles.container}
       onPress={() => {
-        setTitle(title)
+        setTripInfo(id, title)
         router.navigate(`/${id}`)
       }}
     >

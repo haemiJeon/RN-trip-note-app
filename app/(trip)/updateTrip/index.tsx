@@ -44,7 +44,7 @@ const UpdateTripScreen = () => {
     <TripForm
       id={tripId as string}
       title={title}
-      setTitle={setTitle}
+      setTripInfo={setTitle}
       onPress={updateTrip}
       handleChangeText={handleChangeText}
       startDate={startDate}

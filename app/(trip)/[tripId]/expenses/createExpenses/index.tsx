@@ -1,12 +1,159 @@
-import { Text } from 'react-native'
+import Button from '@/components/Button'
+import Input from '@/components/Input'
+import { theme } from '@/constants/theme'
+import { useCreateExpenses } from '@/hooks/useExpenses'
+import { EXPENSE_CATEGORIES, ExpensesCategoryType } from '@/types/expensesType'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useState } from 'react'
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const CreateExpensesScreen = () => {
+  const { tripId } = useLocalSearchParams()
+  const router = useRouter()
+  const [selectedCategory, setSelectedCategory] =
+    useState<ExpensesCategoryType>('FOOD')
+
+  const [amount, setAmount] = useState('')
+  const [memo, setMemo] = useState('')
+
+  const { mutateAsync } = useCreateExpenses()
+
+  const createExpenses = () => {
+    mutateAsync(
+      {
+        tripId: tripId as string,
+        category: selectedCategory,
+        amount: Number(amount),
+        memo: memo,
+      },
+      {
+        onSuccess: () => {
+          router.back()
+        },
+      },
+    )
+  }
+
+  const handleCategorySelect = (category: ExpensesCategoryType) => {
+    setSelectedCategory(category)
+  }
+
+  const getCategoryLabel = (category: ExpensesCategoryType) => {
+    switch (category) {
+      case 'FOOD':
+        return '식비'
+      case 'TRANSPORT':
+        return '교통'
+      case 'LODGING':
+        return '숙박'
+      case 'ACTIVITY':
+        return '관광'
+    }
+  }
+
   return (
-    <SafeAreaView>
-      <Text>여행 경비 생성</Text>
-    </SafeAreaView>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
+      <SafeAreaView edges={['bottom']} style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.categoryContainer}>
+            {EXPENSE_CATEGORIES.map((category) => (
+              <Pressable
+                key={category}
+                onPress={() => handleCategorySelect(category)}
+                style={[
+                  styles.categoryTab,
+                  selectedCategory === category && styles.categoryTabSelected,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.categoryText,
+                    selectedCategory === category &&
+                      styles.categoryTextSelected,
+                  ]}
+                >
+                  {getCategoryLabel(category)}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+          <Input
+            label='금액'
+            placeholder='금액을 입력해주세요'
+            value={amount}
+            onChangeText={(text) => setAmount(text)}
+            keyboardType='numeric'
+            returnKeyType='done'
+          />
+          <Input
+            label='메모'
+            placeholder='메모를 입력해주세요'
+            value={memo}
+            onChangeText={(text) => setMemo(text)}
+            returnKeyType='done'
+          />
+          <View style={styles.buttonContainer}>
+            <Button label='저장' onPress={createExpenses} />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 30,
+    paddingHorizontal: 20,
+  },
+  scrollContent: {
+    flex: 1,
+    gap: 20,
+  },
+  categoryContainer: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  categoryTab: {
+    flex: 1,
+    height: 84,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.white,
+  },
+  categoryTabSelected: {
+    borderColor: theme.colors.primary,
+    backgroundColor: 'rgba(74, 144, 226, 0.2)',
+  },
+  categoryText: {
+    fontSize: 14,
+    fontFamily: theme.fonts.medium,
+    color: theme.colors.gray,
+  },
+  categoryTextSelected: {
+    color: theme.colors.primary,
+  },
+  buttonContainer: {
+    marginTop: 'auto',
+  },
+})
 
 export default CreateExpensesScreen

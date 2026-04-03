@@ -19,7 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 interface TripFormProps {
   id?: string
   title: string
-  setTitle: React.Dispatch<React.SetStateAction<string>>
+  setTripInfo: React.Dispatch<React.SetStateAction<string>>
   handleChangeText: (text: string) => void
   startDate?: Date
   endDate?: Date

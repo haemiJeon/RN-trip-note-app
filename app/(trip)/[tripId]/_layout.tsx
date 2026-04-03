@@ -1,13 +1,15 @@
-import { useTripTitleStore } from '@/store/useTripTitleStore'
+import { theme } from '@/constants/theme'
+import { useTripInfoStore } from '@/store/useTripInfoStore'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { router, Stack } from 'expo-router'
-import { Pressable } from 'react-native'
+import { Stack, useRouter } from 'expo-router'
+import { Pressable, Text } from 'react-native'
 
 const TripDetailLayout = () => {
-  const { title } = useTripTitleStore((state) => state)
+  const router = useRouter()
+  const { title, tripId } = useTripInfoStore((state) => state)
 
   return (
-    <Stack>
+    <Stack screenOptions={{ headerTitleAlign: 'center' }}>
       <Stack.Screen
         name='index'
         options={{
@@ -19,6 +21,25 @@ const TripDetailLayout = () => {
                 size={24}
                 color='black'
               />
+            </Pressable>
+          ),
+          headerRight: () => (
+            <Pressable
+              onPress={() => {
+                router.navigate({
+                  pathname: '/(trip)/[tripId]/expenses',
+                  params: { tripId },
+                })
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: theme.fonts.medium,
+                  color: theme.colors.primary,
+                }}
+              >
+                경비
+              </Text>
             </Pressable>
           ),
         }}
