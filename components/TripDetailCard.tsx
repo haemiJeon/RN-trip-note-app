@@ -8,16 +8,21 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native'
 interface TripDetailCardProps {
   item: TripDetailItemType
   handleModal: () => void
+  goDetail: () => void
 }
 
-const TripDetailCard = ({ item, handleModal }: TripDetailCardProps) => {
+const TripDetailCard = ({
+  item,
+  handleModal,
+  goDetail,
+}: TripDetailCardProps) => {
   const imageUrl =
     Platform.OS === 'android' && item.image
       ? item.image.replace('localhost', '10.0.2.2')
       : item.image
 
   return (
-    <Pressable onPress={() => {}}>
+    <Pressable onPress={goDetail}>
       <Image
         contentFit='cover'
         source={{ uri: imageUrl }}
