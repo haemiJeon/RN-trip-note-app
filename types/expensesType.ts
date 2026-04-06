@@ -1,3 +1,5 @@
+import { MetaType } from '@/types/commonType'
+
 export type ExpensesCategoryType = 'FOOD' | 'TRANSPORT' | 'LODGING' | 'ACTIVITY'
 
 export const EXPENSE_CATEGORIES: ExpensesCategoryType[] = [
@@ -7,9 +9,22 @@ export const EXPENSE_CATEGORIES: ExpensesCategoryType[] = [
   'TRANSPORT',
 ]
 
-export interface CreateExpensesRequestType {
+export interface CreateExpenseRequestType {
   tripId: string
   category: ExpensesCategoryType
   amount: number
   memo: string
+}
+
+export interface ExpensesItemType {
+  id: string
+  category: ExpensesCategoryType
+  amount: number
+  createdAt: string | Date
+}
+
+export interface ResponseExpensesList {
+  data: ExpensesItemType[]
+  meta: MetaType
+  totalAmount: number
 }
