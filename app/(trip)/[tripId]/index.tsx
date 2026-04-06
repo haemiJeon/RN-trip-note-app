@@ -6,6 +6,7 @@ import { useDeleteTripDetail, useGetDetailList } from '@/hooks/useTripDetail'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const TripDetailListScreen = () => {
@@ -67,24 +68,43 @@ const TripDetailListScreen = () => {
       <FlatList
         data={combinedTripDetailList.data ?? []}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TripDetailCard
-            item={item}
-            handleModal={() => {
-              setSelectedId(item.id)
-              setIsOpen(true)
-            }}
-            goDetail={() => {
-              router.navigate({
-                pathname: '/(trip)/[tripId]/[tripDetailId]',
-                params: {
-                  tripId: tripId as string,
-                  tripDetailId: item.id,
-                },
-              })
-            }}
-          />
-        )}
+        renderItem={({ item, index }) => {
+          const pageSize = combinedTripDetailList.meta?.limit ?? 10
+          const totalItems = combinedTripDetailList.data.length
+          const isLastItemOfPage = (index + 1) % pageSize === 0
+          const isLastItem = index === totalItems - 1
+          const isLessThanOnePage = totalItems < pageSize
+          const isShowAd = isLastItemOfPage || (isLessThanOnePage && isLastItem)
+
+          return (
+            <>
+              <TripDetailCard
+                item={item}
+                handleModal={() => {
+                  setSelectedId(item.id)
+                  setIsOpen(true)
+                }}
+                goDetail={() => {
+                  router.navigate({
+                    pathname: '/(trip)/[tripId]/[tripDetailId]',
+                    params: {
+                      tripId: tripId as string,
+                      tripDetailId: item.id,
+                    },
+                  })
+                }}
+              />
+              {isShowAd && (
+                <View>
+                  <BannerAd
+                    unitId={TestIds.ADAPTIVE_BANNER}
+                    size={BannerAdSize.LARGE_BANNER}
+                  />
+                </View>
+              )}
+            </>
+          )
+        }}
         ListEmptyComponent={() => (
           <Text
             style={{
