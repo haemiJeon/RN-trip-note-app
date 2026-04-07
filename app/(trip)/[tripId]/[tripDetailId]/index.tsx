@@ -4,7 +4,6 @@ import dayjs from 'dayjs'
 import { Image } from 'expo-image'
 import { useLocalSearchParams } from 'expo-router'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function TripDetailScreen() {
@@ -28,12 +27,6 @@ export default function TripDetailScreen() {
             <Text style={styles.date}>{tripDetail?.weather}</Text>
           </View>
           <Text style={styles.content}>{tripDetail?.content}</Text>
-        </View>
-        <View>
-          <BannerAd
-            unitId={TestIds.ADAPTIVE_BANNER}
-            size={BannerAdSize.LARGE_BANNER}
-          />
         </View>
       </ScrollView>
     </SafeAreaView>

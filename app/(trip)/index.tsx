@@ -7,7 +7,6 @@ import { useTripStore } from '@/store/tripStore'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function MyTripList() {
@@ -82,10 +81,6 @@ export default function MyTripList() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>내 여행</Text>
-      <BannerAd
-        unitId={TestIds.ADAPTIVE_BANNER}
-        size={BannerAdSize.LARGE_BANNER}
-      />
       <FlatList
         style={{ flex: 1 }}
         data={combinedTrips.data}

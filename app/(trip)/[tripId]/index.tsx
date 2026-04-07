@@ -6,7 +6,6 @@ import { useDeleteTripDetail, useGetDetailList } from '@/hooks/useTripDetail'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function TripDetailListScreen() {
@@ -68,14 +67,7 @@ export default function TripDetailListScreen() {
       <FlatList
         data={combinedTripDetailList.data ?? []}
         keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => {
-          const pageSize = combinedTripDetailList.meta?.limit ?? 10
-          const totalItems = combinedTripDetailList.data.length
-          const isLastItemOfPage = (index + 1) % pageSize === 0
-          const isLastItem = index === totalItems - 1
-          const isLessThanOnePage = totalItems < pageSize
-          const isShowAd = isLastItemOfPage || (isLessThanOnePage && isLastItem)
-
+        renderItem={({ item }) => {
           return (
             <>
               <TripDetailCard
@@ -94,14 +86,6 @@ export default function TripDetailListScreen() {
                   })
                 }}
               />
-              {isShowAd && (
-                <View>
-                  <BannerAd
-                    unitId={TestIds.ADAPTIVE_BANNER}
-                    size={BannerAdSize.LARGE_BANNER}
-                  />
-                </View>
-              )}
             </>
           )
         }}
