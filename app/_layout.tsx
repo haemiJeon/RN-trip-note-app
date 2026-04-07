@@ -6,7 +6,8 @@ import { useEffect } from 'react'
 import 'react-native-reanimated'
 
 if (__DEV__) {
-  require('./ReactotronConfig')
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('../ReactotronConfig')
 }
 
 SplashScreen.preventAutoHideAsync()
