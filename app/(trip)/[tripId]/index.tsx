@@ -9,7 +9,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native'
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const TripDetailListScreen = () => {
+export default function TripDetailListScreen() {
   const { tripId } = useLocalSearchParams()
   const router = useRouter()
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -146,5 +146,3 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
 })
-
-export default TripDetailListScreen

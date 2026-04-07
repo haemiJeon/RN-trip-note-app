@@ -10,7 +10,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native'
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const MyTripList = () => {
+export default function MyTripList() {
   const router = useRouter()
   const {
     cachedTrips,
@@ -139,5 +139,3 @@ const styles = StyleSheet.create({
     right: 20,
   },
 })
-
-export default MyTripList

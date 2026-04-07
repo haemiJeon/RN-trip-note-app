@@ -7,7 +7,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const TripDetailScreen = () => {
+export default function TripDetailScreen() {
   const { tripDetailId } = useLocalSearchParams()
   const { data: tripDetail } = useGetTripDetail(tripDetailId as string)
 
@@ -71,5 +71,3 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
   },
 })
-
-export default TripDetailScreen

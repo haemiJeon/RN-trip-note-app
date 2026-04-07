@@ -20,7 +20,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const CreateTripDetailScreen = () => {
+export default function CreateTripDetailScreen() {
   const router = useRouter()
   const { tripId } = useLocalSearchParams()
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null)
@@ -184,5 +184,3 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 })
-
-export default CreateTripDetailScreen

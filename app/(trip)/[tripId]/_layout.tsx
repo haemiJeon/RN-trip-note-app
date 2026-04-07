@@ -4,7 +4,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { Stack, useRouter } from 'expo-router'
 import { Pressable, Text } from 'react-native'
 
-const TripDetailLayout = () => {
+export default function TripDetailLayout() {
   const router = useRouter()
   const { title, tripId } = useTripInfoStore((state) => state)
 
@@ -137,5 +137,3 @@ const TripDetailLayout = () => {
     </Stack>
   )
 }
-
-export default TripDetailLayout

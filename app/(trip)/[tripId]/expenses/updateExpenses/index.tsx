@@ -25,7 +25,7 @@ const EXPENSE_CATEGORIES: ExpensesCategoryType[] = [
   'ACTIVITY',
 ]
 
-const UpdateExpenses = () => {
+export default function UpdateExpenses() {
   const router = useRouter()
   const { tripId, expenseId } = useLocalSearchParams<{
     tripId: string
@@ -180,5 +180,3 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
   },
 })
-
-export default UpdateExpenses

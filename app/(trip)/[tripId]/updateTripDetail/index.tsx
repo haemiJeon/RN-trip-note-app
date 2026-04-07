@@ -19,7 +19,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const UpdateTripDetailScreen = () => {
+export default function UpdateTripDetailScreen() {
   const { tripDetailId } = useLocalSearchParams()
   const router = useRouter()
 
@@ -163,5 +163,3 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 })
-
-export default UpdateTripDetailScreen

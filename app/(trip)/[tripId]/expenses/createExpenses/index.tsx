@@ -16,7 +16,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const CreateExpensesScreen = () => {
+export default function CreateExpensesScreen() {
   const { tripId } = useLocalSearchParams()
   const router = useRouter()
   const [selectedCategory, setSelectedCategory] =
@@ -155,5 +155,3 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
   },
 })
-
-export default CreateExpensesScreen

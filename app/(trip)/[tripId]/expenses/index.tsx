@@ -15,7 +15,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const ExpensesListScreen = () => {
+export default function ExpensesListScreen() {
   const { tripId } = useLocalSearchParams()
   const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -138,5 +138,3 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
 })
-
-export default ExpensesListScreen
