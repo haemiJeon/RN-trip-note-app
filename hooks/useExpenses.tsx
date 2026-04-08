@@ -1,4 +1,5 @@
 import { api } from '@/api'
+import { QUERY_KEYS } from '@/constants/query-keys'
 import { MetaType } from '@/types/commonType'
 import {
   CreateExpenseRequestType,
@@ -21,7 +22,7 @@ export const useCreateExpenses = () => {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses'] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EXPENSES] })
     },
   })
 }
@@ -34,7 +35,7 @@ export const useGetExpenses = (
   totalAmount: number
 }> => {
   return useInfiniteQuery({
-    queryKey: ['expenses', tripId],
+    queryKey: [QUERY_KEYS.EXPENSES, tripId],
     queryFn: async ({ pageParam }) => {
       const res = await api.get(`/expenses`, {
         params: {
@@ -63,14 +64,14 @@ export const useDeleteExpenses = () => {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses'] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EXPENSES] })
     },
   })
 }
 
 export const useGetExpense = (expenseId: string) => {
   return useQuery({
-    queryKey: ['expense', expenseId],
+    queryKey: [QUERY_KEYS.EXPENSE, expenseId],
     queryFn: async () => {
       const res = await api.get(`/expenses/${expenseId}`)
       return res.data
@@ -92,8 +93,8 @@ export const useUpdateExpenses = () => {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses'] })
-      queryClient.invalidateQueries({ queryKey: ['expense'] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EXPENSES] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EXPENSE] })
     },
   })
 }

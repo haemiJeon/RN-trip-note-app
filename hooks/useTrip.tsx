@@ -1,4 +1,5 @@
 import { api } from '@/api'
+import { QUERY_KEYS } from '@/constants/query-keys'
 import {
   RequestCreateType,
   ResponseTripListType,
@@ -21,14 +22,14 @@ export const useCreateTrip = () => {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trip-list'] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRIP_LIST] })
     },
   })
 }
 
 export const useGetTripList = () => {
   return useInfiniteQuery({
-    queryKey: ['trip-list'],
+    queryKey: [QUERY_KEYS.TRIP_LIST],
     queryFn: async ({ pageParam }): Promise<ResponseTripListType> => {
       const res = await api.get('/trips', {
         params: { page: pageParam },
@@ -49,7 +50,7 @@ export const useGetTrip = (
   tripId: string,
 ): UseQueryResult<TripListItemType> => {
   return useQuery({
-    queryKey: ['trip', tripId],
+    queryKey: [QUERY_KEYS.TRIP, tripId],
     queryFn: async () => {
       const res = await api.get(`/trips/${tripId}`)
       return res.data
@@ -70,7 +71,7 @@ export const useUpdateTrip = () => {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trip-list'] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRIP_LIST] })
     },
   })
 }
@@ -84,7 +85,7 @@ export const useDeleteTrip = () => {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trip-list'] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRIP_LIST] })
     },
   })
 }

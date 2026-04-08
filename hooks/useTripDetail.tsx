@@ -1,4 +1,5 @@
 import { api } from '@/api'
+import { QUERY_KEYS } from '@/constants/query-keys'
 import {
   RequestCreateTripDetailType,
   RequestUpdateTripDetailType,
@@ -22,7 +23,7 @@ export const useGetDetailList = (
   pageParams: number[]
 }> => {
   return useInfiniteQuery({
-    queryKey: ['trip-item-list', tripId],
+    queryKey: [QUERY_KEYS.TRIP_ITEM_LIST, tripId],
     queryFn: async ({ pageParam }) => {
       const res = await api.get<ResponseTripDetailList>(`/trip-items`, {
         params: {
@@ -45,7 +46,7 @@ export const useGetDetailList = (
 
 export const useGetWeather = (lat: number, lon: number) => {
   return useQuery({
-    queryKey: ['weather', lat, lon],
+    queryKey: [QUERY_KEYS.WEATHER, lat, lon],
     queryFn: async () => {
       const res = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.EXPO_PUBLIC_APP_WEATHER_API_KEY}`,
@@ -88,7 +89,7 @@ export const useCreateTripDetail = () => {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trip-item-list'] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRIP_ITEM_LIST] })
     },
   })
 }
@@ -102,7 +103,7 @@ export const useDeleteTripDetail = () => {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trip-item-list'] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRIP_ITEM_LIST] })
     },
   })
 }
@@ -111,7 +112,7 @@ export const useGetTripDetail = (
   tripDetailId: string,
 ): UseQueryResult<TripDetailItemType> => {
   return useQuery({
-    queryKey: ['trip-detail', tripDetailId],
+    queryKey: [QUERY_KEYS.TRIP_DETAIL, tripDetailId],
     queryFn: async () => {
       const res = await api.get(`/trip-items/${tripDetailId}`)
       return res.data
@@ -157,7 +158,7 @@ export const useUpdateTripDetail = () => {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trip-item-list'] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRIP_ITEM_LIST] })
     },
   })
 }
